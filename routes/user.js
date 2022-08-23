@@ -23,4 +23,14 @@ router.put('/:userId', (req, res) => userController.updateUser(req, res));
 // Route for deleting user account
 router.delete('/:userId', (req, res) => userController.deleteUser(req, res));
 
+// Route for following a user
+router.put('/follow/:userId', (req, res) =>
+  userController.followUser(req, res)
+);
+
+// Route for unfollow a user
+router.put('/unfollow/:userId', (req, res) =>
+  userController.unfollowUser(req, res)
+);
+
 module.exports = router;

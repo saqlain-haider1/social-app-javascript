@@ -90,9 +90,110 @@ const deleteUser = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
+const followUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { userData } = req.body;
+    if (!userId || !userData.id) {
+      throw new Error('User1 or User2  ID not found!');
+    } else {
+      const userToFollow = await User.findById(mongoose.Types.ObjectId(userId));
+      if (userToFollow) {
+        // User 1 found in the database
+        let followUser = await User.findById(
+          mongoose.Types.ObjectId(userData.id)
+        );
+        if (followUser) {
+          // User 2 found in the database
+          followUser.following.push(userToFollow._id);
+          await followUser.save();
+          userToFollow.followers.push(followUser._id);
+          await userToFollow.save();
+          return res
+            .status(200)
+            .json({ message: 'User followed successfully!' });
+        } else {
+          throw new Error('Following User not exists!');
+        }
+      } else {
+        throw new Error('User to follow not exists!');
+      }
+    }
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
+
+const unfollowUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { userData } = req.body;
+    if (!userId || !userData.id) {
+      throw new Error('User1 or User2  ID not found!');
+    } else {
+      const userToUnfollow = await User.findById(
+        mongoose.Types.ObjectId(userId)
+      );
+      if (userToUnfollow) {
+        // User 1 found in the database
+        let followingUser = await User.findById(
+          mongoose.Types.ObjectId(userData.id)
+        );
+        if (followingUser) {
+          // User 2 found in the database
+          console.log(followingUser, userToUnfollow._id);
+          let userToUnfollowIndex = followingUser.following.indexOf(
+            userToUnfollow._id
+          );
+          console.log(userToUnfollowIndex);
+          if (userToUnfollowIndex === -1) {
+            throw new Error('User not followed!');
+          }
+
+          let followingUserIndex = userToUnfollow.followers.indexOf(
+            followingUser._id
+          );
+          followingUser.following.splice(userToUnfollowIndex, 1);
+          await followingUser.save();
+          userToUnfollow.followers.splice(followingUserIndex, 1);
+          await userToUnfollow.save();
+
+          //   await followingUser.updateOne(
+          //     { _id: followingUser._id },
+          //     {
+          //       $pullAll: {
+          //         following: [{ _id: userToUnfollow._id }],
+          //       },
+          //     }
+          //   );
+          //   await userToUnfollow.updateOne(
+          //     { _id: userToUnfollow._id },
+          //     {
+          //       $pullAll: {
+          //         followers: [{ _id: followingUser._id }],
+          //       },
+          //     }
+          //   );
+          return res
+            .status(200)
+            .json({ message: 'User unfollowed successfully!' });
+        } else {
+          throw new Error('Following User not exists!');
+        }
+      } else {
+        throw new Error('User to unfollow not exists!');
+      }
+    }
+  } catch (err) {
+    return res.status(400).json({ error: err.stack });
+  }
+};
 module.exports = {
   userSignUp,
   getUser,
   updateUser,
   deleteUser,
+  followUser,
+  unfollowUser,
 };
