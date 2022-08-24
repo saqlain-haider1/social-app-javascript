@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const userController = require('../controllers/userController');
+const feedController = require('../controllers/feedController');
 const checkAuth = require('../middleware/auth');
 router.post('/test', (req, res) => {
   console.log(req.body);
@@ -11,6 +12,8 @@ router.post('/test', (req, res) => {
 
 // User CRUD Routes
 // Route for creating user account
+// Route for getting feed of a user
+router.get('/feed', (req, res) => feedController.getFeed(req, res));
 
 router.post('/signup', (req, res) => userController.userSignUp(req, res));
 
@@ -41,4 +44,5 @@ router.put('/unfollow/:userId', checkAuth, (req, res) =>
 
 // Route for login
 router.post('/login', (req, res) => userController.userLogin(req, res));
+
 module.exports = router;

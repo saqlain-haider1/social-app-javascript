@@ -4,12 +4,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv').config();
 
+// Function to handle userSignUp
 const userSignUp = async (req, res) => {
   try {
-    const { userObject } = req.body;
-    if (userObject) {
+    const { userData } = req.body;
+    if (userData) {
       // If user object is present in the request body
-      const { firstName, lastName, email, password } = userObject;
+      const { firstName, lastName, email, password } = userData;
       const user = await User.findOne({ email: email });
       // If user email is already present in the database
       if (user) {
@@ -38,6 +39,7 @@ const userSignUp = async (req, res) => {
   }
 };
 
+// Function to get user information from  the database
 const getUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -52,6 +54,7 @@ const getUser = async (req, res) => {
   }
 };
 
+// Function to handle user login
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
   console.log(`User login: ${email}`);
@@ -78,7 +81,6 @@ const userLogin = async (req, res) => {
                 expiresIn: '1h',
               }
             );
-
             return res
               .status(200)
               .json({ message: 'Auth Succeded!', token: token });
@@ -94,6 +96,8 @@ const userLogin = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
+// Function to update information of an exisisting user account
 const updateUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -119,6 +123,7 @@ const updateUser = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+// Function to handle DELETION of a given user account
 const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -141,6 +146,7 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Function to followUser
 const followUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -156,6 +162,11 @@ const followUser = async (req, res) => {
         );
         if (followUser) {
           // User 2 found in the database
+          if (followUser.following.includes(userToFollow._id)) {
+            return res
+              .status(200)
+              .json({ message: 'User is already followed!' });
+          }
           followUser.following.push(userToFollow._id);
           await followUser.save();
           userToFollow.followers.push(followUser._id);
@@ -175,6 +186,7 @@ const followUser = async (req, res) => {
   }
 };
 
+// Function to unfollow user
 const unfollowUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -208,23 +220,6 @@ const unfollowUser = async (req, res) => {
           await followingUser.save();
           userToUnfollow.followers.splice(followingUserIndex, 1);
           await userToUnfollow.save();
-
-          //   await followingUser.updateOne(
-          //     { _id: followingUser._id },
-          //     {
-          //       $pullAll: {
-          //         following: [{ _id: userToUnfollow._id }],
-          //       },
-          //     }
-          //   );
-          //   await userToUnfollow.updateOne(
-          //     { _id: userToUnfollow._id },
-          //     {
-          //       $pullAll: {
-          //         followers: [{ _id: followingUser._id }],
-          //       },
-          //     }
-          //   );
           return res
             .status(200)
             .json({ message: 'User unfollowed successfully!' });

@@ -1,6 +1,8 @@
 const { default: mongoose } = require('mongoose');
 const Post = require('../models/Post');
+const { getIO } = require('../config/server');
 
+// Function to handle POST creation request
 const createPost = async (req, res) => {
   try {
     const { postData } = req.body;
@@ -19,6 +21,8 @@ const createPost = async (req, res) => {
         });
         console.log(post);
         post.save().then((result) => {
+          // giving signal to all client who are listening to socket "newPost"
+          getIO().emit('newPost', { newPost: post });
           res.status(200).json({
             message: 'Post created successfully!',
             CreatedPost: result,
@@ -32,6 +36,8 @@ const createPost = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+// Function to get posts of a given user ID
 const getPost = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -53,6 +59,8 @@ const getPost = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+// Function to update a POST
 const updatePost = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -79,6 +87,8 @@ const updatePost = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
+// Function to handle DELETION of a post
 const deletePost = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -101,6 +111,7 @@ const deletePost = async (req, res) => {
   }
 };
 
+// Exporting all functions
 module.exports = {
   createPost,
   getPost,

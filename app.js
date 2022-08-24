@@ -2,6 +2,7 @@ let express = require('express');
 let dotenv = require('dotenv');
 const { default: mongoose } = require('mongoose');
 const dbConnection = require('./config/db');
+const { init } = require('./config/server');
 // import dbConnection from './config/db.js';
 const app = express();
 app.use(express.json());
@@ -12,11 +13,16 @@ const postRoutes = require('./routes/post');
 // Creating a db  connection
 dbConnection();
 
-app.listen(process.env.PORT, (err) => {
+const server = app.listen(process.env.PORT, (err) => {
   if (err) {
     return console.log(err);
   } else {
     console.log(`Server listening on port ${process.env.PORT}`);
+    const io = init(server);
+    io.on('connection', () => {
+      // on connection with client
+      console.log(`Client # ${io.engine.clientsCount} is connected`);
+    });
   }
 });
 
