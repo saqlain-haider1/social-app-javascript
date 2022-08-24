@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const userController = require('../controllers/userController');
-
+const checkAuth = require('../middleware/auth');
 router.post('/test', (req, res) => {
   console.log(req.body);
 
@@ -15,22 +15,30 @@ router.post('/test', (req, res) => {
 router.post('/signup', (req, res) => userController.userSignUp(req, res));
 
 // Route for getting user through user ID
-router.get('/:userId', (req, res) => userController.getUser(req, res));
+router.get('/:userId', checkAuth, (req, res) =>
+  userController.getUser(req, res)
+);
 
 // Route for updating user account
-router.put('/:userId', (req, res) => userController.updateUser(req, res));
+router.put('/:userId', checkAuth, (req, res) =>
+  userController.updateUser(req, res)
+);
 
 // Route for deleting user account
-router.delete('/:userId', (req, res) => userController.deleteUser(req, res));
+router.delete('/:userId', checkAuth, (req, res) =>
+  userController.deleteUser(req, res)
+);
 
 // Route for following a user
-router.put('/follow/:userId', (req, res) =>
+router.put('/follow/:userId', checkAuth, (req, res) =>
   userController.followUser(req, res)
 );
 
 // Route for unfollow a user
-router.put('/unfollow/:userId', (req, res) =>
+router.put('/unfollow/:userId', checkAuth, (req, res) =>
   userController.unfollowUser(req, res)
 );
 
+// Route for login
+router.post('/login', (req, res) => userController.userLogin(req, res));
 module.exports = router;

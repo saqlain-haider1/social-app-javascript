@@ -1,5 +1,8 @@
 const { default: mongoose } = require('mongoose');
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv').config();
 
 const userSignUp = async (req, res) => {
   try {
@@ -13,8 +16,13 @@ const userSignUp = async (req, res) => {
         res.status(409).json({ message: 'Email already in use' });
       } else {
         // create new user object
-
-        let newUser = new User({ firstName, lastName, email, password });
+        hashValue = await bcrypt.hash(password, 10);
+        let newUser = new User({
+          firstName,
+          lastName,
+          email,
+          password: hashValue,
+        });
         newUser.save().then((user) => {
           console.log('Created User: ' + user);
           return res
@@ -44,6 +52,48 @@ const getUser = async (req, res) => {
   }
 };
 
+const userLogin = async (req, res) => {
+  const { email, password } = req.body;
+  console.log(`User login: ${email}`);
+  console.log(`Password: ${password}`);
+
+  try {
+    const user = await User.findOne({ email: email });
+    if (user) {
+      const result = bcrypt.compare(
+        password,
+        user.password,
+        function (err, result) {
+          if (err) {
+            throw err;
+          }
+          if (result) {
+            const token = jwt.sign(
+              {
+                userId: user._id,
+                email: user.email,
+              },
+              process.env.JWT_SECRET,
+              {
+                expiresIn: '1h',
+              }
+            );
+
+            return res
+              .status(200)
+              .json({ message: 'Auth Succeded!', token: token });
+          } else {
+            return res.status(400).json({ message: 'Auth Failed!' });
+          }
+        }
+      );
+    } else {
+      throw new Error('Email or Password is incorrect !');
+    }
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
 const updateUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -191,6 +241,7 @@ const unfollowUser = async (req, res) => {
 };
 module.exports = {
   userSignUp,
+  userLogin,
   getUser,
   updateUser,
   deleteUser,

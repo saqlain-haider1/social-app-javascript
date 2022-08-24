@@ -1,8 +1,6 @@
-const e = require('express');
 const { default: mongoose } = require('mongoose');
 const Post = require('../models/Post');
 
-// Create a new Post
 const createPost = async (req, res) => {
   try {
     const { postData } = req.body;
@@ -44,12 +42,10 @@ const getPost = async (req, res) => {
       const posts = await Post.find({ userId: userId })
         .limit(limitValue)
         .skip(skipValue);
-      res
-        .status(200)
-        .json({
-          pagination: { limit: limitValue, skip: skipValue },
-          posts: posts,
-        });
+      res.status(200).json({
+        pagination: { limit: limitValue, skip: skipValue },
+        posts: posts,
+      });
     } else {
       throw new Error(`User ID not found`);
     }

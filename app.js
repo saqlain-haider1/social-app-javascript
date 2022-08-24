@@ -12,11 +12,11 @@ const postRoutes = require('./routes/post');
 // Creating a db  connection
 dbConnection();
 
-app.listen(3000, (err) => {
+app.listen(process.env.PORT, (err) => {
   if (err) {
     return console.log(err);
   } else {
-    console.log('Server listening on port 3000');
+    console.log(`Server listening on port ${process.env.PORT}`);
   }
 });
 
