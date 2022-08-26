@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const userController = require('../controllers/userController');
 const feedController = require('../controllers/feedController');
+const paymentController = require('../controllers/paymentController');
 const checkAuth = require('../middleware/auth');
 router.post('/test', (req, res) => {
   console.log(req.body);
@@ -45,4 +46,6 @@ router.put('/unfollow/:userId', checkAuth, (req, res) =>
 // Route for login
 router.post('/login', (req, res) => userController.userLogin(req, res));
 
+// Route for payment checkout
+router.post('/payment', (req, res) => paymentController.checkout(req, res));
 module.exports = router;

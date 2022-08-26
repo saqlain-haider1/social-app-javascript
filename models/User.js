@@ -20,6 +20,10 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  paid: {
+    type: Boolean,
+    default: false,
+  },
   followers: {
     type: [mongoose.Types.ObjectId],
     default: [],

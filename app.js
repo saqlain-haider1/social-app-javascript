@@ -1,11 +1,14 @@
 let express = require('express');
 let dotenv = require('dotenv');
 const { default: mongoose } = require('mongoose');
+const bodyparser = require('body-parser');
 const dbConnection = require('./config/db');
 const { init } = require('./config/server');
 // import dbConnection from './config/db.js';
 const app = express();
 app.use(express.json());
+app.use(bodyparser.urlencoded({ extended: false }));
+app.use(bodyparser.json());
 // Aquiring all the models
 const User = require('./models/User');
 const userRoutes = require('./routes/user');
