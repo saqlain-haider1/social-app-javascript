@@ -98,7 +98,6 @@ const deletePost = async (req, res) => {
       let deletedPost = await Post.findByIdAndDelete(
         mongoose.Types.ObjectId(post.id)
       );
-      console.log(deletedPost);
       return res.status(200).json({
         message: 'Post deleted successfully!',
         DeletedPost: deletedPost,

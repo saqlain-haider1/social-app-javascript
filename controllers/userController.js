@@ -57,8 +57,6 @@ const getUser = async (req, res) => {
 // Function to handle user login
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
-  console.log(`User login: ${email}`);
-  console.log(`Password: ${password}`);
 
   try {
     const user = await User.findOne({ email: email });
