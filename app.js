@@ -37,7 +37,9 @@ app.use('/', (req, res, next) => {
 });
 
 app.get('/', (req, res, next) => {
-  console.log('Welcome to the Social Network App deployed on Heroku Server');
+  res.status(200)(
+    'Welcome to the Social Network App deployed on Heroku Server'
+  );
   next();
 });
 
