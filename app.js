@@ -15,7 +15,14 @@ const postRoutes = require('./routes/post');
 const moderatorRoutes = require('./routes/moderator');
 
 // Creating a db  connection
-let db = await dbConnection();
+let URI = process.env.DBURI;
+mongoose.connect(URI, (err) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log('Connected to database successfully');
+  }
+});
 
 const server = app.listen(process.env.PORT, (err) => {
   if (err) {
