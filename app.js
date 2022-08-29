@@ -15,7 +15,7 @@ const postRoutes = require('./routes/post');
 const moderatorRoutes = require('./routes/moderator');
 
 // Creating a db  connection
-dbConnection();
+await dbConnection();
 
 const server = app.listen(process.env.PORT, (err) => {
   if (err) {
