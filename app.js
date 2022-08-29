@@ -36,6 +36,11 @@ app.use('/', (req, res, next) => {
   next();
 });
 
+app.get('/', (req, res, next) => {
+  console.log('Welcome to the Social Network App deployed on Heroku Server');
+  next();
+});
+
 // Registeration of all routes
 app.use('/user', userRoutes);
 app.use('/post', postRoutes);
