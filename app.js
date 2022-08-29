@@ -1,5 +1,5 @@
 let express = require('express');
-let dotenv = require('dotenv');
+require('dotenv').config();
 const bodyparser = require('body-parser');
 const dbConnection = require('./config/db');
 const { init } = require('./config/server');
