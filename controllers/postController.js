@@ -1,5 +1,6 @@
 const { default: mongoose } = require('mongoose');
 const Post = require('../models/Post');
+const User = require('../models/User');
 const { getIO } = require('../config/server');
 
 // Function to handle POST creation request
