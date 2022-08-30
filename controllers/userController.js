@@ -75,9 +75,7 @@ const userLogin = async (req, res) => {
                 email: user.email,
               },
               process.env.JWT_SECRET,
-              {
-                expiresIn: '1h',
-              }
+              {}
             );
             return res
               .status(200)
