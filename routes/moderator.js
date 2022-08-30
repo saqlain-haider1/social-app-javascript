@@ -5,7 +5,7 @@ const moderatorController = require('../controllers/moderatorController');
 
 // Route for sign up moderator
 router.post('/signup', (req, res) =>
-  moderatorController.signupModerator(req, res)
+  moderatorController.moderatorSignUp(req, res)
 );
 
 // Route for login moderator
