@@ -227,7 +227,7 @@ const unfollowUser = async (req, res) => {
       }
     }
   } catch (err) {
-    return res.status(400).json({ error: err.stack });
+    return res.status(400).json({ error: err.message });
   }
 };
 module.exports = {
