@@ -1,6 +1,7 @@
 const Moderator = require('../models/Moderator');
 const Post = require('../models/Post');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 // Function to handle userSignUp
 const moderatorSignUp = async (req, res) => {
   try {
