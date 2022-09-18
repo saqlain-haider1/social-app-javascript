@@ -2,7 +2,6 @@ let express = require('express');
 const { mongoose } = require('mongoose');
 require('dotenv').config();
 const bodyparser = require('body-parser');
-const dbConnection = require('./config/db');
 const { init } = require('./config/server');
 
 const app = express();
@@ -16,7 +15,12 @@ const postRoutes = require('./routes/post');
 const moderatorRoutes = require('./routes/moderator');
 
 // Creating a db  connection
-let URI = process.env.DBURI;
+let URI;
+if (process.env.NODE_ENV === 'test') {
+  URI = process.env.TEST_DBURI;
+} else {
+  URI = process.env.DBURI;
+}
 mongoose.connect(URI, (err) => {
   if (err) {
     console.error(err);
@@ -25,24 +29,20 @@ mongoose.connect(URI, (err) => {
   }
 });
 
-const server = app.listen(process.env.PORT, (err) => {
+const server = app.listen(process.env.PORT, async (err) => {
   if (err) {
     return console.log(err);
   } else {
     console.log(`Server listening on port ${process.env.PORT}`);
     const io = init(server);
-    io.on('connection', () => {
-      // on connection with client
-      console.log(`Client # ${io.engine.clientsCount} is connected`);
-    });
   }
 });
 
-app.use('/', (req, res, next) => {
-  let requestMethod = req.method;
-  console.log(`${requestMethod}: ${req.url}`);
-  next();
-});
+// app.use('/', (req, res, next) => {
+//   let requestMethod = req.method;
+//   console.log(`${requestMethod}: ${req.url}`);
+//   next();
+// });
 
 app.get('/', (req, res, next) => {
   res
@@ -55,3 +55,5 @@ app.get('/', (req, res, next) => {
 app.use('/user', userRoutes);
 app.use('/post', postRoutes);
 app.use('/moderator', moderatorRoutes);
+
+module.exports = { server };

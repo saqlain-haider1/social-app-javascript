@@ -7,7 +7,7 @@ const dotenv = require('dotenv').config();
 // Function to handle userSignUp
 const userSignUp = async (req, res) => {
   try {
-    const { userData } = req.body;
+    const userData = req.body.userData;
     if (userData) {
       // If user object is present in the request body
       const { firstName, lastName, email, password } = userData;
@@ -25,10 +25,9 @@ const userSignUp = async (req, res) => {
           password: hashValue,
         });
         newUser.save().then((user) => {
-          console.log('Created User: ' + user);
           return res
             .status(200)
-            .json({ message: 'User created successfully!' });
+            .json({ message: 'User created successfully!', createdUser: user });
         });
       }
     } else {
@@ -129,7 +128,6 @@ const deleteUser = async (req, res) => {
       let deletedUser = await User.findByIdAndDelete(
         mongoose.Types.ObjectId(user.id)
       );
-      console.log(deletedUser);
       return res.status(200).json({
         message: 'User deleted successfully!',
         DeletedUser: deletedUser,
@@ -200,11 +198,9 @@ const unfollowUser = async (req, res) => {
         );
         if (followingUser) {
           // User 2 found in the database
-          console.log(followingUser, userToUnfollow._id);
           let userToUnfollowIndex = followingUser.following.indexOf(
             userToUnfollow._id
           );
-          console.log(userToUnfollowIndex);
           if (userToUnfollowIndex === -1) {
             throw new Error('User not followed!');
           }

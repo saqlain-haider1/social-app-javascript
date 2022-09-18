@@ -39,8 +39,7 @@ const getFeed = async (req, res) => {
         });
       } else {
         throw new Error(
-          `User did not paid for the social feed yet.
-          Please pay first!`
+          'User did not paid for the social feed yet. Please pay first!'
         );
       }
     } else {
@@ -48,7 +47,7 @@ const getFeed = async (req, res) => {
     }
   } catch (err) {
     //console.log(err);
-    return res.status(500).json({ error: err.message });
+    return res.status(400).json({ error: err.message });
   }
 };
 
