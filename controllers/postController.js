@@ -20,7 +20,6 @@ const createPost = async (req, res) => {
           title,
           description,
         });
-        console.log(post);
         post.save().then((result) => {
           // giving signal to all client who are listening to socket "newPost"
           getIO().emit('newPost', { newPost: post });
@@ -42,9 +41,11 @@ const createPost = async (req, res) => {
 const getPost = async (req, res) => {
   try {
     const { userId } = req.params;
-    if (userId) {
-      const limitValue = req.query.limit;
-      const skipValue = req.query.skip;
+    // Check if user exists
+    let user = await User.findOne({ _id: userId });
+    if (user) {
+      const limitValue = req.query.limit || 5;
+      const skipValue = req.query.skip || 0;
       // Pagination of posts
       const posts = await Post.find({ userId: userId })
         .limit(limitValue)
@@ -54,7 +55,7 @@ const getPost = async (req, res) => {
         posts: posts,
       });
     } else {
-      throw new Error(`User ID not found`);
+      throw new Error(`User not found`);
     }
   } catch (err) {
     res.status(404).json({ message: err.message });
@@ -68,7 +69,7 @@ const updatePost = async (req, res) => {
     const { postData } = req.body;
 
     if (!postData || !postId) {
-      throw new Error('PostID or Post Data not given!');
+      throw new Error('PostID or Post Data not found!');
     }
     const post = await Post.findOne({ _id: postId });
     if (post) {

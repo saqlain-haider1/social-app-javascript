@@ -24,10 +24,10 @@ const moderatorSignUp = async (req, res) => {
           password: hashValue,
         });
         newUser.save().then((user) => {
-          console.log('Created User: ' + user);
-          return res
-            .status(200)
-            .json({ message: 'User created successfully!' });
+          return res.status(200).json({
+            message: 'User created successfully!',
+            createdUser: user,
+          });
         });
       }
     } else {
@@ -58,9 +58,7 @@ const moderatorLogin = async (req, res) => {
                 email: user.email,
               },
               process.env.JWT_SECRET,
-              {
-                expiresIn: '1h',
-              }
+              {}
             );
             return res
               .status(200)
@@ -109,17 +107,16 @@ const getAllPosts = async (req, res) => {
 const getPost = async (req, res) => {
   try {
     const { postId } = req.params;
-    if (postId) {
-      const limitValue = req.query.limit;
-      const skipValue = req.query.skip;
-      // Pagination of posts
-      const post = await Post.find({ _id: postId });
-
+    const limitValue = req.query.limit || 5;
+    const skipValue = req.query.skip || 0;
+    // Pagination of posts
+    const post = await Post.findById(postId);
+    if (post)
       res.status(200).json({
         post: post,
       });
-    } else {
-      throw new Error(`Post ID not found`);
+    else {
+      throw new Error(`Post not found`);
     }
   } catch (err) {
     res.status(404).json({ message: err.message });
